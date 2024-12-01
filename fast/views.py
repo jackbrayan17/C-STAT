@@ -116,6 +116,10 @@ def calc_variation_rates(request):
     # Logic for the "Calc Variation Rates" page
     return render(request, 'calc_variation_rates.html')
 
+def charts_generation_on_teg(request):
+    # Logic for the "Charts Generation on TEG" page
+    return render(request, 'filter.html')
+
 from django.http import FileResponse, JsonResponse
 import os
 def download_file(request, filename):

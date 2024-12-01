@@ -8,6 +8,7 @@ urlpatterns = [
     path('signup/', views.SignupView.as_view(), name='api_signup'),
     path('login/', views.LoginView.as_view(), name='api_login'),
     path('calc-variation/', views.calc_variation, name='calc_variation'),
+    path('filter/', views.charts_generation_on_teg, name='charts_generation_on_teg'),
     # HTML Endpoints
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('form/signup/', views.signup_page, name='signup'),
