@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Consolidation</title>
+    <link rel="icon" type="image/png" href="{% static 'images/C-FAST logo.png' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4 shadow-md flex justify-between items-center w-full">
+        <!-- Logo on the left -->
+        <div class="flex items-center space-x-2">
+            <a href="{% url 'home_page' %}">   <img src="{% static 'images/C-FAST logo.png' %}" alt="Logo" class="w-12 h-12"> <!-- Adjust logo size -->
+          </a>  <span class="text-white text-xl font-bold">C-STAT</span>
+        </div>
+
+        <!-- Link to "Calc Variation Rates" on the right -->
+        <div class="flex space-x-4">
+            <a href="{% url 'calc_variation_rates' %}" class="text-white text-lg hover:bg-green-600 hover:text-white px-4 py-2 rounded-md transition duration-300">
+                Calc Variation Rates
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-grow flex items-center justify-center">
+        <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-6 mt-8">
+            <h2 class="text-2xl font-bold text-center text-gray-700 mb-6">Consolidate Trimester Data</h2>
+
+            <form action="{% url 'process_folder' %}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+                <label for="folder" class="block text-gray-600 font-medium">Select a folder with Excel files:</label>
+                <input 
+                    type="file" 
+                    id="folder" 
+                    name="folder" 
+                    webkitdirectory 
+                    directory 
+                    class="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                >
+                <button 
+                    type="submit" 
+                    class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                >
+                    Consolidate Trimester
+                </button>
+            </form>
+
+            <!-- Display download button if file is generated -->
+            {% if generated_file_name %}
+                <div class="mt-4 text-center">
+                    <p class="text-green-600 font-medium">Consolidation Complete!</p> <br>
+                    <a 
+                        href="{% url 'download_file' generated_file_name %}" 
+                        class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600"
+                    >
+                        Download File
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-4 text-center">
+        <p class="text-sm">&copy; 2024 C-STAT. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
