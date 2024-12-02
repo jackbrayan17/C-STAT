@@ -1,0 +1,266 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="{% static 'images/C-FAST logo.png' %}"
+    />
+    <title>Charts Generation on TEG Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gradient-to-b from-gray-50 to-gray-200 min-h-screen flex flex-col"
+  >
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4 shadow-lg flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <a href="{% url 'home_page' %}">
+          <img
+            src="{% static 'images/C-FAST logo.png' %}"
+            alt="Logo"
+            class="w-10 h-10"
+          />
+        </a>
+        <span class="text-white text-2xl font-extrabold tracking-wide"
+          >C-STAT</span
+        >
+      </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav class="bg-gray-100 py-2 px-4">
+      <ul class="flex text-sm text-gray-700">
+        <li>
+          <a href="{% url 'home_page' %}" class="hover:text-blue-600">Home</a>
+        </li>
+        <li class="mx-2">/</li>
+        <li class="text-blue-600">Charts Generation</li>
+      </ul>
+    </nav>
+
+    <!-- Content Area -->
+    <main class="flex-grow p-8 flex justify-center items-center">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl"
+      >
+        <!-- Section 1: Import Data -->
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+        >
+          <h2 class="text-2xl font-bold text-blue-600 mb-4">Import Data</h2>
+          <form class="space-y-6">
+            <div>
+              <label
+                for="fileType"
+                class="block text-sm font-semibold text-gray-700"
+                >Select File Type</label
+              >
+              <select
+                id="fileType"
+                class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option>CSV</option>
+                <option>Excel</option>
+              </select>
+            </div>
+            <div>
+              <label
+                for="fileUpload"
+                class="block text-sm font-semibold text-gray-700"
+                >Upload File</label
+              >
+              <input
+                type="file"
+                id="fileUpload"
+                class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <button
+              type="button"
+              class="w-full bg-blue-600 text-white py-3 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300"
+            >
+              IMPORT DATA
+            </button>
+          </form>
+        </div>
+
+        <!-- Section 2: Clean Data -->
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+        >
+          <h2 class="text-2xl font-bold text-green-600 mb-4">Clean Data</h2>
+          <form class="space-y-6">
+            <div>
+              <p class="text-sm font-semibold text-gray-700 mb-2">
+                Select Columns to Clean
+              </p>
+              <div class="flex items-center space-x-6">
+                <label>
+                  <input type="checkbox" class="mr-2 focus:ring-green-500" />
+                  Column 1
+                </label>
+                <label>
+                  <input type="checkbox" class="mr-2 focus:ring-green-500" />
+                  Column 2
+                </label>
+              </div>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-700 mb-2">Options</p>
+              <div class="flex items-center space-x-6">
+                <label>
+                  <input type="checkbox" class="mr-2 focus:ring-green-500" />
+                  Drop NAN values
+                </label>
+                <label>
+                  <input type="checkbox" class="mr-2 focus:ring-green-500" />
+                  Drop Duplicate values
+                </label>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="w-full bg-green-600 text-white py-3 rounded-lg shadow-lg hover:bg-green-700 transition duration-300"
+            >
+              CLEAN DATA
+            </button>
+          </form>
+        </div>
+
+        <!-- Filter Data Section -->
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+        >
+          <h2 class="text-2xl font-bold text-indigo-600 mb-4">Filter Data</h2>
+          <form class="space-y-6">
+            <!-- Select Column -->
+            <div>
+              <label
+                for="filterColumn"
+                class="block text-sm font-semibold text-gray-700"
+                >Select Column to Filter</label
+              >
+              <select
+                id="filterColumn"
+                class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                onchange="updateFilterInfo()"
+              >
+                <option value="Column 1">Column 1</option>
+                <option value="Column 2">Column 2</option>
+              </select>
+            </div>
+
+            <!-- Filter Conditions -->
+            <div>
+              <div class="flex items-center space-x-2 mb-2">
+                <select
+                  class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="equals">equals</option>
+                  <option value="not equal">not equal</option>
+                  <option value="greater than">greater than</option>
+                  <option value="less than">less than</option>
+                  <option value="contains">contains</option>
+                  <option value="does not contain">does not contain</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Enter value"
+                  class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+
+              <!-- Logical Operator -->
+              <div class="flex items-center space-x-4 mb-2">
+                <input
+                  type="radio"
+                  id="and"
+                  name="logicalOperator"
+                  value="AND"
+                  class="focus:ring-indigo-500"
+                  checked
+                />
+                <label for="and" class="text-sm font-semibold text-gray-700"
+                  >And</label
+                >
+                <input
+                  type="radio"
+                  id="or"
+                  name="logicalOperator"
+                  value="OR"
+                  class="focus:ring-indigo-500"
+                />
+                <label for="or" class="text-sm font-semibold text-gray-700"
+                  >Or</label
+                >
+              </div>
+
+              <!-- Second Filter Condition -->
+              <div class="flex items-center space-x-2">
+                <select
+                  class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="equals">equals</option>
+                  <option value="not equal">not equal</option>
+                  <option value="greater than">greater than</option>
+                  <option value="less than">less than</option>
+                  <option value="contains">contains</option>
+                  <option value="does not contain">does not contain</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Enter value"
+                  class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <!-- Apply and Clear Buttons -->
+            <div class="flex space-x-4">
+              <button
+                type="button"
+                class="w-1/2 bg-indigo-600 text-white py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300"
+              >
+                APPLY FILTER
+              </button>
+              <button
+                type="button"
+                class="w-1/2 bg-gray-600 text-white py-3 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300"
+              >
+                CLEAR FILTER
+              </button>
+            </div>
+          </form>
+
+          <!-- Filter Info Section -->
+          <div
+            id="filterInfo"
+            class="mt-4 bg-gray-100 p-4 rounded-lg shadow-sm text-sm text-gray-800"
+          >
+            <p>
+              No filter applied yet. Select a column and condition to apply a
+              filter.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 text-center mt-auto">
+      <p class="text-sm">&copy; 2024 C-STAT. All rights reserved.</p>
+    </footer>
+
+    <script>
+      function updateFilterInfo() {
+        const filterColumn = document.getElementById("filterColumn").value;
+        const filterInfoDiv = document.getElementById("filterInfo");
+        filterInfoDiv.innerHTML = `<p>Filtering by <strong>${filterColumn}</strong>.</p>`;
+      }
+    </script>
+  </body>
+</html>
