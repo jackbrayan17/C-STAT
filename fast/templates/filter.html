@@ -31,6 +31,17 @@
       </div>
     </nav>
 
+    <!-- Breadcrumb -->
+    <nav class="bg-gray-100 py-2 px-4">
+      <ul class="flex text-sm text-gray-700">
+        <li>
+          <a href="{% url 'home_page' %}" class="hover:text-blue-600">Home</a>
+        </li>
+        <li class="mx-2">/</li>
+        <li class="text-blue-600">Charts Generation</li>
+      </ul>
+    </nav>
+
     <!-- Content Area -->
     <main class="flex-grow p-8 flex justify-center items-center">
       <div
@@ -120,107 +131,122 @@
           </form>
         </div>
 
-        <!-- Section 3: Filter Data -->
+        <!-- Filter Data Section -->
         <div
-        class="bg-white rounded-xl shadow-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
-      >
-        <h2 class="text-2xl font-bold text-indigo-600 mb-4">Custom Filter</h2>
-        <form class="space-y-6">
-          <!-- Select Column -->
-          <div>
-            <label
-              for="filterColumn"
-              class="block text-sm font-semibold text-gray-700"
-              >Select Column to Filter</label
-            >
-            <select
-              id="filterColumn"
-              class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option>Column 1</option>
-              <option>Column 2</option>
-            </select>
-          </div>
-      
-          <!-- Filter Conditions -->
-          <div>
-            <div class="flex items-center space-x-2 mb-2">
-              <select
-                class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          class="bg-white rounded-xl shadow-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+        >
+          <h2 class="text-2xl font-bold text-indigo-600 mb-4">Filter Data</h2>
+          <form class="space-y-6">
+            <!-- Select Column -->
+            <div>
+              <label
+                for="filterColumn"
+                class="block text-sm font-semibold text-gray-700"
+                >Select Column to Filter</label
               >
-                <option>equals</option>
-                <option>not equal</option>
-                <option>greater than</option>
-                <option>less than</option>
-                <option>contains</option>
-                <option>does not contain</option>
-              </select>
-              <input
-                type="text"
-                placeholder="Enter value"
-                class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-      
-            <!-- Logical Operator -->
-            <div class="flex items-center space-x-4 mb-2">
-              <input
-                type="radio"
-                id="and"
-                name="logicalOperator"
-                value="AND"
-                class="focus:ring-indigo-500"
-                checked
-              />
-              <label for="and" class="text-sm font-semibold text-gray-700">And</label>
-              <input
-                type="radio"
-                id="or"
-                name="logicalOperator"
-                value="OR"
-                class="focus:ring-indigo-500"
-              />
-              <label for="or" class="text-sm font-semibold text-gray-700">Or</label>
-            </div>
-      
-            <!-- Second Filter Condition -->
-            <div class="flex items-center space-x-2">
               <select
-                class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                id="filterColumn"
+                class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                onchange="updateFilterInfo()"
               >
-                <option>equals</option>
-                <option>not equal</option>
-                <option>greater than</option>
-                <option>less than</option>
-                <option>contains</option>
-                <option>does not contain</option>
+                <option value="Column 1">Column 1</option>
+                <option value="Column 2">Column 2</option>
               </select>
-              <input
-                type="text"
-                placeholder="Enter value"
-                class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
             </div>
+
+            <!-- Filter Conditions -->
+            <div>
+              <div class="flex items-center space-x-2 mb-2">
+                <select
+                  class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="equals">equals</option>
+                  <option value="not equal">not equal</option>
+                  <option value="greater than">greater than</option>
+                  <option value="less than">less than</option>
+                  <option value="contains">contains</option>
+                  <option value="does not contain">does not contain</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Enter value"
+                  class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+
+              <!-- Logical Operator -->
+              <div class="flex items-center space-x-4 mb-2">
+                <input
+                  type="radio"
+                  id="and"
+                  name="logicalOperator"
+                  value="AND"
+                  class="focus:ring-indigo-500"
+                  checked
+                />
+                <label for="and" class="text-sm font-semibold text-gray-700"
+                  >And</label
+                >
+                <input
+                  type="radio"
+                  id="or"
+                  name="logicalOperator"
+                  value="OR"
+                  class="focus:ring-indigo-500"
+                />
+                <label for="or" class="text-sm font-semibold text-gray-700"
+                  >Or</label
+                >
+              </div>
+
+              <!-- Second Filter Condition -->
+              <div class="flex items-center space-x-2">
+                <select
+                  class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="equals">equals</option>
+                  <option value="not equal">not equal</option>
+                  <option value="greater than">greater than</option>
+                  <option value="less than">less than</option>
+                  <option value="contains">contains</option>
+                  <option value="does not contain">does not contain</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Enter value"
+                  class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <!-- Apply and Clear Buttons -->
+            <div class="flex space-x-4">
+              <button
+                type="button"
+                class="w-1/2 bg-indigo-600 text-white py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300"
+              >
+                APPLY FILTER
+              </button>
+              <button
+                type="button"
+                class="w-1/2 bg-gray-600 text-white py-3 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300"
+              >
+                CLEAR FILTER
+              </button>
+            </div>
+          </form>
+
+          <!-- Filter Info Section -->
+          <div
+            id="filterInfo"
+            class="mt-4 bg-gray-100 p-4 rounded-lg shadow-sm text-sm text-gray-800"
+          >
+            <p>
+              No filter applied yet. Select a column and condition to apply a
+              filter.
+            </p>
           </div>
-      
-          <!-- Apply and Clear Buttons -->
-          <div class="flex space-x-4">
-            <button
-              type="button"
-              class="w-1/2 bg-indigo-600 text-white py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300"
-            >
-              APPLY FILTER
-            </button>
-            <button
-              type="button"
-              class="w-1/2 bg-gray-600 text-white py-3 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300"
-            >
-              CLEAR FILTER
-            </button>
-          </div>
-        </form>
-      </div>
-      
+        </div>
       </div>
     </main>
 
@@ -228,5 +254,13 @@
     <footer class="bg-gray-800 text-white py-4 text-center mt-auto">
       <p class="text-sm">&copy; 2024 C-STAT. All rights reserved.</p>
     </footer>
+
+    <script>
+      function updateFilterInfo() {
+        const filterColumn = document.getElementById("filterColumn").value;
+        const filterInfoDiv = document.getElementById("filterInfo");
+        filterInfoDiv.innerHTML = `<p>Filtering by <strong>${filterColumn}</strong>.</p>`;
+      }
+    </script>
   </body>
 </html>
