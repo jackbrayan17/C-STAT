@@ -23,6 +23,99 @@ from .you import consolidate_data  # Import your consolidation function
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from .variation import calculate_variation
+from .forms import FileUploadForm
+from .models import UploadedFile
+import pandas as pd
+
+
+@csrf_exempt
+def import_data(request):
+    if request.method == 'POST':
+        form = FileUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploaded_file = form.cleaned_data['file']
+            file_instance = UploadedFile(file=uploaded_file)
+            file_instance.save()
+
+            try:
+                # Read the uploaded file based on its type
+                if uploaded_file.name.endswith('.csv'):
+                    data = pd.read_csv(uploaded_file)
+                elif uploaded_file.name.endswith('.xlsx'):
+                    data = pd.read_excel(uploaded_file)
+
+                # Save processed data to the model
+                file_instance.processed_data = data.to_dict()  # Assuming `processed_data` is a JSONField in your model
+                file_instance.save()
+
+                return JsonResponse({
+                    'message': 'File uploaded successfully!',
+                    'columns': list(data.columns)
+                })
+
+            except Exception as e:
+                return JsonResponse({'error': f'Error processing file: {str(e)}'}, status=400)
+        else:
+            # Form validation failed
+            return JsonResponse({'error': form.errors['file'][0]}, status=400)
+
+    # For GET requests, render the file upload form
+    return render(request, 'filter.html', {'form': FileUploadForm()})
+
+
+def clean_data(request, file_id):
+    try:
+        file_instance = UploadedFile.objects.get(id=file_id)
+        data = pd.DataFrame(file_instance.processed_data)
+
+        # Apply cleaning based on user selections
+        columns_to_keep = request.POST.getlist('columns')
+        drop_null = request.POST.get('drop_null') == 'true'
+        drop_duplicates = request.POST.get('drop_duplicates') == 'true'
+
+        if columns_to_keep:
+            data = data[columns_to_keep]
+
+        if drop_null:
+            data = data.dropna()
+
+        if drop_duplicates:
+            data = data.drop_duplicates()
+
+        file_instance.processed_data = data.to_dict()
+        file_instance.save()
+
+        return JsonResponse({'message': 'Data cleaned successfully!', 'columns': list(data.columns)})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+def filter_data(request, file_id):
+    try:
+        file_instance = UploadedFile.objects.get(id=file_id)
+        data = pd.DataFrame(file_instance.processed_data)
+
+        # Apply filters dynamically
+        filters = request.POST.getlist('filters')
+        for filter_cond in filters:
+            column, condition, value = filter_cond.split(':')
+            if condition == 'equal_to':
+                data = data[data[column] == value]
+            elif condition == 'greater_than':
+                data = data[data[column] > float(value)]
+            elif condition == 'less_than':
+                data = data[data[column] < float(value)]
+            elif condition == 'not_equal_to':
+                data = data[data[column] != value]
+
+        # Generate download file
+        filename = 'filtered_data.csv'
+        filepath = os.path.join('media', filename)
+        data.to_csv(filepath, index=False)
+
+        return FileResponse(open(filepath, 'rb'), as_attachment=True, filename=filename)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
 def process_folder(request):

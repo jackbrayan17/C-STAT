@@ -4,6 +4,10 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from django.contrib.auth import views as auth_views
 urlpatterns = [
+     path('import-data/', views.import_data, name='import_data'),
+    path('clean-data/<int:file_id>/', views.clean_data, name='clean_data'),
+    path('filter-data/<int:file_id>/', views.filter_data, name='filter_data'),
+    
     # API Endpoints
     path('signup/', views.SignupView.as_view(), name='api_signup'),
     path('login/', views.LoginView.as_view(), name='api_login'),

@@ -4,7 +4,15 @@ from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
 from django.contrib.auth.models import Group
 
-# Form for creating a user with role selection
+class FileUploadForm(forms.Form):
+    file = forms.FileField()
+
+    def clean_file(self):
+        uploaded_file = self.cleaned_data['file']
+        if not (uploaded_file.name.endswith('.csv') or uploaded_file.name.endswith('.xlsx')):
+            raise forms.ValidationError("Only .csv or .xlsx files are supported.")
+        return uploaded_file
+    # Form for creating a user with role selection
 class UserCreateForm(UserCreationForm):
     email = forms.EmailField(required=True)
     role = forms.ChoiceField(choices=[('supervisor', 'Supervisor'), ('analyst', 'Analyst'), ('viewer', 'Viewer')], required=True)

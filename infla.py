@@ -1,22 +1,31 @@
 import pandas as pd
 
-def filter_excel_file_single_sheet(input_file, output_file):
+def filter_excel_file(input_file, output_file):
     # Load the Excel file
     df = pd.read_excel(input_file, sheet_name=0, header=None, engine='openpyxl')
 
-    # Define relevant cells and ranges
-    title_cells = ['A2816', 'A2838']
-    country_ranges = [(2819, 2824), (2841, 2846)]
-    date_row = 2814
-    filter_row = 2815
+    title_cells = ['A2759', 'A2816', 'A2838', 'A2908', 'A2920', 'A2942', 'A2969']
+    country_ranges = [
+        (2761, 2766),
+        (2819, 2824),
+        (2841, 2846),
+        (2911, 2916),
+        (2923, 2928),
+        (2945, 2950),
+        (2972, 2977),
+    ]
+    date_rows = [2724, 2814, 2814, 2906, 2906, 2906, 2967]
+    filter_rows = [2725, 2815, 2815, 2907, 2907, 2907, 2968]
 
-    # Initialize a list to store combined filtered data
-    all_filtered_data = []
+    # Initialize a dictionary to store filtered data
+    filtered_data = {}
 
     for index, title_cell in enumerate(title_cells):
-        # Extract title from the specified cell
-        title = df.loc[int(title_cell[1:]) - 1, 0]
+        title_row = int(title_cell[1:])
+        title = df.loc[title_row - 1, 0]  # Get the title text
         country_range = country_ranges[index]
+        date_row = date_rows[index]
+        filter_row = filter_rows[index]
 
         # Get countries
         countries = [df.loc[i - 1, 0] for i in range(country_range[0], country_range[1] + 1)]
@@ -25,7 +34,7 @@ def filter_excel_file_single_sheet(input_file, output_file):
         dates = df.loc[date_row - 1, 1:].values
         filters = df.loc[filter_row - 1, 1:].values
 
-        # Identify valid columns (those where the filter row is NaN or contains 'Estim.')
+        # Identify valid columns (those where the filter row is NaN or contains 'Estim')
         valid_columns = [col for col, value in enumerate(filters, start=1) if pd.isna(value) or 'Estim' in str(value)]
 
         # Get corresponding valid dates
@@ -34,23 +43,15 @@ def filter_excel_file_single_sheet(input_file, output_file):
         # Filter data for the valid dates and countries
         data = df.iloc[:, valid_columns]
 
-        # Format filtered data: assign countries as columns and valid dates as index
-        filtered_data = data.iloc[[i - 1 for i in range(country_range[0], country_range[1] + 1)], :].T
-        filtered_data.columns = countries
-        filtered_data.index = valid_dates
+        # Format filtered data: assign countries as row indices and valid dates as column headers
+        filtered_data[title] = data.iloc[[i - 1 for i in range(country_range[0], country_range[1] + 1)], :].T
+        filtered_data[title].columns = countries
+        filtered_data[title].index = valid_dates  # Set valid dates as the index (column headers)
 
-        # Add title as a column for differentiation
-        filtered_data.insert(0, 'Title', title)
-
-        # Append to the combined list
-        all_filtered_data.append(filtered_data)
-
-    # Combine all data into a single DataFrame
-    combined_data = pd.concat(all_filtered_data)
-
-    # Save the combined data to an Excel file
+    # Save the filtered data to an Excel file
     with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
-        combined_data.to_excel(writer, sheet_name='Filtered Data')
+        for title, data in filtered_data.items():
+            data.to_excel(writer, sheet_name=title[:30])  # Sheet names truncated to 30 characters
 
 # Example usage
-filter_excel_file_single_sheet('input.xlsx', 'filt5.xlsx')
+filter_excel_file('input.xlsx', 'filt7.xlsx')
