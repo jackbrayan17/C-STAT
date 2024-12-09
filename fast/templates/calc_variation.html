@@ -38,12 +38,20 @@
                 {% csrf_token %}
                 <div>
                     <label for="trim1" class="block text-gray-600 font-medium">Select Trim1 Excel File:</label>
-                    <input type="file" id="trim1" name="trim1" accept=".xlsx, .xls" class="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                    <input 
+                    type="file"
+                     id="trim1" 
+                     name="trim1" 
+                     accept=".xlsx, .xls" 
+                     class="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      required
+                      onchange="clearMessage()"
+                      >
                 </div>
 
                 <div>
                     <label for="trim2" class="block text-gray-600 font-medium">Select Trim2 Excel File:</label>
-                    <input type="file" id="trim2" name="trim2" accept=".xlsx, .xls" class="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                    <input onchange="clearMessage()" type="file" id="trim2" name="trim2" accept=".xlsx, .xls" class="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
                 </div>
 
                 <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none">
@@ -53,7 +61,7 @@
 
             <!-- Display download link if file is generated -->
             {% if generated_file_name %}
-                <div class="mt-4 text-center">
+                <div id="calculation-message" class="mt-4 text-center">
                     <p class="text-green-600 font-medium">Calculation Complete!</p><br>
                     <a href="{% url 'download_variation_file' generated_file_name %}" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
                         Download Variation Excel File
@@ -62,7 +70,14 @@
             {% endif %}
         </div>
     </div>
-
+    <script>
+        function clearMessage() {
+            const message = document.querySelector('#calculation-message');
+            if (message) {
+                message.textContent = '';
+            }
+        }
+    </script>
     <!-- Footer -->
     <footer class="bg-gray-800 text-white p-4 text-center">
         <p class="text-sm">&copy; 2024 C-STAT. All rights reserved.</p>

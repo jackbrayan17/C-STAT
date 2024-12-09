@@ -70,8 +70,7 @@ def calculate_variation(file1, file2):
         merged = merged.sort_values(by="Order").drop(columns=["Order_Trim1", "Order_Trim2"])
 
         merged["Variation (FCFA)"] = merged["Total_Trim2"] - merged["Total_Trim1"]
-        merged["Variation (%)"] = ((merged["Total_Trim2"] - merged["Total_Trim1"]) / 
-                                   (merged["Total_Trim1"] + merged["Total_Trim2"])) * 100
+        merged["Variation (%)"] = ((merged["Total_Trim2"] - merged["Total_Trim1"]) /merged["Total_Trim1"]) * 100
 
         merged = merged.drop(columns=["Order"])
         summary[sheet] = merged
