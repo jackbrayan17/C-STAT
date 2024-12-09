@@ -4,7 +4,7 @@ def filter_excel_file(input_file, output_file):
     # Load the Excel file
     df = pd.read_excel(input_file, sheet_name=0, header=None, engine='openpyxl')
 
-    title_cells = ['A9','A1767','A1911','A1992','A2003','A2023','A2132','A2273','A2759', 'A2816', 'A2838', 'A2908', 'A2920', 'A2942', 'A2969']
+    title_cells = ['A9','A1767','A1911','A1992','A2003','A2023','A2132','A2273','A2748', 'A2816', 'A2838', 'A2908', 'A2920', 'A2942', 'A2969']
     country_ranges = [
         (10,14),
         (1768, 1773),
@@ -14,7 +14,7 @@ def filter_excel_file(input_file, output_file):
         (2004,2009),
         (2133,2138),
         (2274,2279),
-        (2761, 2766),
+        (2750, 2755),
         (2819, 2824),
         (2841, 2846),
         (2911, 2916),
@@ -62,4 +62,4 @@ def filter_excel_file(input_file, output_file):
             data.to_excel(writer, sheet_name=title[:30])  # Sheet names truncated to 30 characters
 
 # Example usage
-filter_excel_file('input.xlsx', 'filt1.xlsx')
+filter_excel_file('input.xlsx', 'filter.xlsx')
