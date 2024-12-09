@@ -70,7 +70,10 @@ def calculate_variation(file1, file2):
         merged = merged.sort_values(by="Order").drop(columns=["Order_Trim1", "Order_Trim2"])
 
         merged["Variation (FCFA)"] = merged["Total_Trim2"] - merged["Total_Trim1"]
-        merged["Variation (%)"] = ((merged["Total_Trim2"] - merged["Total_Trim1"]) /merged["Total_Trim1"]) * 100
+        merged["Variation (%)"] = ((merged["Total_Trim2"] - merged["Total_Trim1"]) / merged["Total_Trim1"]) * 100
+
+        # Replace 'inf' values with 100
+        merged["Variation (%)"] = merged["Variation (%)"].replace([float('inf'), -float('inf')], 100)
 
         merged = merged.drop(columns=["Order"])
         summary[sheet] = merged
@@ -80,5 +83,21 @@ def calculate_variation(file1, file2):
         for sheet_name in tqdm(expected_sheets, desc="Writing Sheets", unit="sheet"):
             if sheet_name in summary:
                 summary[sheet_name].to_excel(writer, sheet_name=sheet_name, index=False)
+                
+                # Get the worksheet object
+                worksheet = writer.sheets[sheet_name]
+                
+                # Set column widths and format
+                for idx, col in enumerate(summary[sheet_name].columns):
+                    max_len = max(
+                        summary[sheet_name][col].astype(str).map(len).max(),
+                        len(col)
+                    )
+                    worksheet.set_column(idx, idx, max_len + 2)  # Adjust column width
+
+                    # Set specific format for numeric columns to avoid scientific notation
+                    if summary[sheet_name][col].dtype in ['float64', 'int64']:
+                        num_format = writer.book.add_format({'num_format': '0'})  # No scientific notation
+                        worksheet.set_column(idx, idx, max_len + 2, num_format)
 
     return output_file
