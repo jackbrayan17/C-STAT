@@ -1,67 +1,108 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <link rel="icon" type="image/png" href="{% static 'images/C-FAST logo.png' %}">
-    
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-
+    <link rel="icon" type="image/png" href="{% static 'images/C-FAST logo.png' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  </head>
+  <body class="bg-gray-100">
     <!-- Navbar -->
     <nav class="bg-blue-600 p-4 shadow-md flex justify-between items-center w-full">
-        <!-- Logo on the left -->
-        <div class="flex items-center space-x-2">
-            <a href="{% url 'home_page' %}">
-                <img src="{% static 'images/C-FAST logo.png' %}" alt="Logo" class="w-12 h-12">
-            </a>
-            <span class="text-white text-xl font-bold">C-STAT</span>
-        </div>
-
-        <!-- Links on the right -->
-        <!-- <div class="flex space-x-4">
-            <a href="{% url 'process_folder' %}" class="text-white text-lg hover:bg-green-600 hover:text-white px-4 py-2 rounded-md transition duration-300">
-                Consolidate Data
-            </a>
-        </div> -->
+      <div class="flex items-center space-x-2">
+        <a href="{% url 'home_page' %}">
+          <img src="{% static 'images/C-FAST logo.png' %}" alt="Logo" class="w-12 h-12" />
+        </a>
+        <span class="text-white text-xl font-bold">C-STAT</span>
+      </div>
     </nav>
 
     <!-- Login Form -->
     <div class="flex items-center justify-center h-screen">
-        <form method="POST" action="{% url 'api_login' %}" class="bg-white p-6 rounded shadow-md w-1/3">
-            {% csrf_token %}
-            <h2 class="text-xl font-bold mb-4">Login</h2>
+      <form id="login-form" class="bg-white p-6 rounded shadow-md w-1/3">
+        {% csrf_token %}
+        <h2 class="text-xl font-bold mb-4">Login</h2>
 
-            <!-- Username Field with Label -->
-            <div class="mb-4">
-                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                <input id="username" type="text" name="username" placeholder="Username" class="w-full p-2 mt-1 border rounded" required>
-            </div>
+        <!-- Username Field -->
+        <div class="mb-4">
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+          <input id="username" type="text" name="username" placeholder="Username" class="w-full p-2 mt-1 border rounded" required />
+        </div>
 
-            <!-- Password Field with Label -->
-            <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input id="password" type="password" name="password" placeholder="Password" class="w-full p-2 mt-1 border rounded" required>
-            </div>
+        <!-- Password Field -->
+        <div class="mb-4">
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input id="password" type="password" name="password" placeholder="Password" class="w-full p-2 mt-1 border rounded" required />
+        </div>
 
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded">Login</button>
+        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded">Login</button>
 
-            <!-- Link to Sign Up page if user doesn't have an account -->
-            <p class="text-center mt-4 text-sm">
-                Don't have an account? <a href="{% url 'signup' %}" class="text-blue-500">Sign up here</a>.
-            </p>
-        </form>
+        <p class="text-center mt-4 text-sm">
+          Don't have an account? <a href="{% url 'signup' %}" class="text-blue-500">Sign up here</a>.
+        </p>
+      </form>
     </div>
 
     <!-- Footer -->
     <footer class="bg-blue-600 py-4">
-        <div class="container mx-auto text-center text-white">
-            <p>&copy; 2024 C-STAT. All Rights Reserved.</p>
-        </div>
+      <div class="container mx-auto text-center text-white">
+        <p>&copy; 2024 C-STAT. All Rights Reserved.</p>
+      </div>
     </footer>
 
-</body>
+    <script>
+      document.querySelector('#login-form').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Prevent page reload
+
+        const formData = new FormData(e.target);
+        try {
+          const response = await fetch("{% url 'api_login' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+          });
+
+          if (response.ok) {
+            Toastify({
+              text: "Login successful! Redirecting...",
+              duration: 3000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: "#4CAF50",
+            }).showToast();
+
+            // Redirect after delay
+            setTimeout(() => {
+              window.location.href = "{% url 'home_page' %}";
+            }, 3000);
+          } else {
+            Toastify({
+              text: "Login failed. Please check your credentials.",
+              duration: 3000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: "#F56565",
+            }).showToast();
+          }
+        } catch (error) {
+          Toastify({
+            text: "Network error. Please try again.",
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#F56565",
+          }).showToast();
+        }
+      });
+    </script>
+  </body>
 </html>

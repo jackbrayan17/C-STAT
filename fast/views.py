@@ -291,11 +291,14 @@ class SignupView(APIView):
         serializer = SignupSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            # Redirect to the login page after successful signup
-            return redirect('login')  # Use the name of your login URL pattern here
+            response = redirect('login')
+            response['Refresh'] = '3'  # 3-second delay
+            return response
+        messages.error(request, "Signup failed. Please check your inputs.")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 from django.contrib.auth.models import User
+from django.contrib.auth import login
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
@@ -303,6 +306,7 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
+            login(request, user)  # Log the user in
             # token, created = Token.objects.get_or_create(user=user)
             # Redirect to the home page after successful login
             # print("Token Created:", token.key)

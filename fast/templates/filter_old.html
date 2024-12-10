@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="{% static 'images/C-FAST logo.png' %}" />
+    <title>Charts Generation on TEG Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-b from-gray-50 to-gray-200 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4 shadow-lg flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <a href="{% url 'home_page' %}">
+          <img src="{% static 'images/C-FAST logo.png' %}" alt="Logo" class="w-10 h-10" />
+        </a>
+        <span class="text-white text-2xl font-extrabold tracking-wide">C-STAT</span>
+      </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav class="bg-gray-100 py-2 px-4">
+      <ul class="flex text-sm text-gray-700">
+        <li><a href="{% url 'home_page' %}" class="hover:text-blue-600">Home</a></li>
+        <li class="mx-2">/</li>
+        <li class="text-blue-600">Charts Generation</li>
+      </ul>
+    </nav>
+
+    <!-- Content Area -->
+    <main class="flex-grow p-8 flex justify-center items-center">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl">
+        <!-- Import Data Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+          <h2 class="text-2xl font-bold text-blue-600 mb-4">Import Data</h2>
+          <form id="importForm" class="space-y-6" method="POST" enctype="multipart/form-data" action="/api/import-data/">
+            {% csrf_token %}
+            <div>
+              <label for="fileUpload" class="block text-sm font-semibold text-gray-700">Upload File</label>
+              <input
+                type="file"
+                id="fileUpload"
+                name="file"
+                class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <button
+              type="submit"
+              class="w-full bg-blue-600 text-white py-3 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300"
+            >
+              IMPORT DATA
+            </button>
+          </form>
+          <div id="importStatus" class="mt-4 text-sm text-gray-700"></div>
+        </div>
+
+        <!-- Clean Data Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+          <h2 class="text-2xl font-bold text-green-600 mb-4">Clean Data</h2>
+          <form id="cleanForm" class="space-y-6">
+            <div>
+              <p class="text-sm font-semibold text-gray-700 mb-2">Select Columns to Clean</p>
+              <div id="columnsList" class="flex flex-wrap gap-4">
+                <!-- Columns will be populated here -->
+              </div>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-700 mb-2">Options</p>
+              <div class="flex items-center space-x-6">
+                <label>
+                  <input type="checkbox" id="dropNulls" name="drop_nulls" class="mr-2 focus:ring-green-500" />
+                  Drop NAN values
+                </label>
+                <label>
+                  <input type="checkbox" id="dropDuplicates" name="drop_duplicates" class="mr-2 focus:ring-green-500" />
+                  Drop Duplicate values
+                </label>
+              </div>
+            </div>
+            <button
+              type="button"
+              id="cleanButton"
+              class="w-full bg-green-600 text-white py-3 rounded-lg shadow-lg hover:bg-green-700 transition duration-300"
+            >
+              CLEAN DATA
+            </button>
+          </form>
+          <div id="cleanStatus" class="mt-4 text-sm text-gray-700"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 text-center mt-auto">
+      <p class="text-sm">&copy; 2024 C-STAT. All rights reserved.</p>
+    </footer>
+
+    <script>
+      const columnsList = document.getElementById("columnsList");
+      const importForm = document.getElementById("importForm");
+      const importStatus = document.getElementById("importStatus");
+
+      // Submit the form and fetch columns dynamically
+      importForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(importForm);
+
+        try {
+          const response = await fetch("{% url 'import_data' %}", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            importStatus.textContent = "File uploaded successfully!";
+            importStatus.classList.add("text-green-600");
+
+            // Clear existing columns
+            columnsList.innerHTML = "";
+
+            // Populate columns
+            data.columns.forEach((col) => {
+              const checkbox = document.createElement("label");
+              checkbox.classList.add("flex", "items-center");
+              checkbox.innerHTML = `<input type="checkbox" class="mr-2" name="columns" value="${col}" /> ${col}`;
+              columnsList.appendChild(checkbox);
+            });
+          } else {
+            importStatus.textContent = "Error: " + data.message;
+            importStatus.classList.add("text-red-600");
+          }
+        } catch (error) {
+          importStatus.textContent = "An unexpected error occurred.";
+          importStatus.classList.add("text-red-600");
+        }
+      });
+    </script>
+  </body>
+</html>

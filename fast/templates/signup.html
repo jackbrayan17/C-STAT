@@ -1,73 +1,115 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Signup</title>
-    <link rel="icon" type="image/png" href="{% static 'images/C-FAST logo.png' %}">
-    
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-
+    <link rel="icon" type="image/png" href="{% static 'images/C-FAST logo.png' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  </head>
+  <body class="bg-gray-100">
     <!-- Navbar -->
     <nav class="bg-blue-600 p-4 shadow-md flex justify-between items-center w-full">
-        <!-- Logo on the left -->
-        <div class="flex items-center space-x-2">
-            <a href="{% url 'home_page' %}">
-                <img src="{% static 'images/C-FAST logo.png' %}" alt="Logo" class="w-12 h-12">
-            </a>
-            <span class="text-white text-xl font-bold">C-STAT</span>
-        </div>
-
-        <!-- Links on the right -->
-        <!-- <div class="flex space-x-4">
-            <a href="{% url 'process_folder' %}" class="text-white text-lg hover:bg-green-600 hover:text-white px-4 py-2 rounded-md transition duration-300">
-                Consolidate Data
-            </a>
-        </div> -->
+      <div class="flex items-center space-x-2">
+        <a href="{% url 'home_page' %}">
+          <img src="{% static 'images/C-FAST logo.png' %}" alt="Logo" class="w-12 h-12" />
+        </a>
+        <span class="text-white text-xl font-bold">C-STAT</span>
+      </div>
     </nav>
 
     <!-- Signup Form -->
     <div class="flex items-center justify-center h-screen">
-        <form method="POST" action="/api/signup/" class="bg-white p-6 rounded shadow-md w-1/3">
-            {% csrf_token %}
-            <h2 class="text-xl font-bold mb-4">Signup</h2>
+      <form id="signup-form" class="bg-white p-6 rounded shadow-md w-1/3">
+        {% csrf_token %}
+        <h2 class="text-xl font-bold mb-4">Signup</h2>
 
-            <!-- Username Field with Label -->
-            <div class="mb-4">
-                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                <input id="username" type="text" name="username" placeholder="Username" class="w-full p-2 mt-1 border rounded" required>
-            </div>
+        <!-- Username Field -->
+        <div class="mb-4">
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+          <input id="username" type="text" name="username" placeholder="Username" class="w-full p-2 mt-1 border rounded" required />
+        </div>
 
-            <!-- Email Field with Label -->
-            <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input id="email" type="email" name="email" placeholder="Email" class="w-full p-2 mt-1 border rounded" required>
-            </div>
+        <!-- Email Field -->
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input id="email" type="email" name="email" placeholder="Email" class="w-full p-2 mt-1 border rounded" required />
+        </div>
 
-            <!-- Password Field with Label -->
-            <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input id="password" type="password" name="password" placeholder="Password" class="w-full p-2 mt-1 border rounded" required>
-            </div>
+        <!-- Password Field -->
+        <div class="mb-4">
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input id="password" type="password" name="password" placeholder="Password" class="w-full p-2 mt-1 border rounded" required />
+        </div>
 
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded">Signup</button>
+        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded">Signup</button>
 
-            <!-- Link to Login page if user already has an account -->
-            <p class="text-center mt-4 text-sm">
-                Already have an account? <a href="{% url 'login' %}" class="text-blue-500">Login here</a>.
-            </p>
-        </form>
+        <p class="text-center mt-4 text-sm">
+          Already have an account? <a href="{% url 'login' %}" class="text-blue-500">Login here</a>.
+        </p>
+      </form>
     </div>
 
     <!-- Footer -->
     <footer class="bg-blue-600 py-4">
-        <div class="container mx-auto text-center text-white">
-            <p>&copy; 2024 C-STAT. All Rights Reserved.</p>
-        </div>
+      <div class="container mx-auto text-center text-white">
+        <p>&copy; 2024 C-STAT. All Rights Reserved.</p>
+      </div>
     </footer>
 
-</body>
+    <script>
+      document.querySelector('#signup-form').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Prevent default form submission
+
+        const formData = new FormData(e.target);
+
+        try {
+          const response = await fetch("{% url 'api_signup' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+          });
+
+          if (response.ok) {
+            Toastify({
+              text: "Signup successful! Redirecting to login",
+              duration: 3000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: "#4CAF50",
+            }).showToast();
+
+            setTimeout(() => {
+              window.location.href = "{% url 'login' %}";
+            }, 3000);
+          } else {
+            const result = await response.json();
+            Toastify({
+              text: result.error || "Signup failed. Please check your inputs.",
+              duration: 3000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: "#F56565",
+            }).showToast();
+          }
+        } catch (error) {
+          Toastify({
+            text: "Network error. Please try again.",
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#F56565",
+          }).showToast();
+        }
+      });
+    </script>
+  </body>
 </html>

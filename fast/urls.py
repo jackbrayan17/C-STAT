@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from django.contrib.auth import views as auth_views
 urlpatterns = [
-     path('import-data/', views.import_data, name='import_data'),
+    path('import-data/', views.import_data, name='import_data'),
     path('clean-data/<int:file_id>/', views.clean_data, name='clean_data'),
     path('filter-data/<int:file_id>/', views.filter_data, name='filter_data'),
     
@@ -13,13 +13,14 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name='api_login'),
     path('calc-variation/', views.calc_variation, name='calc_variation'),
     path('filter/', views.charts_generation_on_teg, name='charts_generation_on_teg'),
+    
     # HTML Endpoints
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('form/signup/', views.signup_page, name='signup'),
     path('/', views.home_page, name='home_page'),  
     path('form/login/', views.login_page, name='login'),
-     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-     path('calc-variation/', views.calc_variation, name='calc_variation_rates'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('calc-variation/', views.calc_variation, name='calc_variation_rates'),
     path('download-variation/<str:file_name>/', views.download_variation_file, name='download_variation_file'),
     # User management endpoints
     # path('api/admin/users/', views.UserListCreateAPIView.as_view(), name='user-list-create'),

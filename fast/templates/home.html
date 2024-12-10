@@ -1,87 +1,140 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
-    <link rel="icon" type="image/png" href="{% static 'images/C-FAST logo.png' %}">
-    
+    <link
+      rel="icon"
+      type="image/png"
+      href="{% static 'images/C-FAST logo.png' %}"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Favicon -->
-    <link rel="icon" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body class="bg-gray-100 flex flex-col min-h-screen">
-    
+    <link
+      rel="icon"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-100 flex flex-col min-h-screen">
     <!-- Navbar -->
-    <nav class="bg-blue-600 p-4 shadow-md flex justify-between items-center w-full">
-        <!-- Logo on the left -->
-        <div class="flex items-center space-x-2">
-            <img src="{% static 'images/C-FAST logo.png' %}" alt="Logo" class="w-12 h-12">
-            <span class="text-white text-xl font-bold">C-STAT</span>
-        </div>
-    
-        <!-- Links on the right -->
-        <div class="flex space-x-4">
-            {% if user.is_authenticated %}
-                <span class="text-white text-lg">
-                    Welcome, {{ user.username }}
-                </span>
-                <a href="{% url 'logout' %}" class="text-white text-lg hover:bg-red-600 hover:text-white px-4 py-2 rounded-md transition duration-300">
-                    Logout
-                </a>
-            {% else %}
-                <a href="{% url 'signup' %}" class="text-white text-lg hover:bg-green-600 hover:text-white px-4 py-2 rounded-md transition duration-300">
-                    Signup
-                </a>
-                <a href="{% url 'login' %}" class="text-white text-lg hover:bg-green-600 hover:text-white px-4 py-2 rounded-md transition duration-300">
-                    Login
-                </a>
-            {% endif %}
-        </div>
+    <nav
+      class="bg-blue-600 p-4 shadow-md flex justify-between items-center w-full"
+    >
+      <!-- Logo on the left -->
+      <div class="flex items-center space-x-2">
+        <img
+          src="{% static 'images/C-FAST logo.png' %}"
+          alt="Logo"
+          class="w-12 h-12"
+        />
+        <span class="text-white text-xl font-bold">C-STAT</span>
+      </div>
+
+      <!-- Links on the right -->
+      <div class="flex items-center space-x-4">
+        {% if user.is_authenticated %}
+        <!-- Welcome message and logout form -->
+        <span class="text-white text-lg">Welcome, {{ user.username }}</span>
+
+        <!-- Logout form (POST request for security) -->
+        <form action="{% url 'logout' %}" method="POST">
+          {% csrf_token %}
+          <button
+            type="submit"
+            class="flex items-center text-white text-lg hover:bg-red-600 px-4 py-2 rounded-md transition duration-300"
+          >
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </button>
+        </form>
+        {% else %}
+        <!-- Login and Signup Links -->
+        <a
+          href="{% url 'signup' %}"
+          class="text-white text-lg hover:bg-green-600 px-4 py-2 rounded-md transition duration-300"
+        >
+          Signup
+        </a>
+        <a
+          href="{% url 'login' %}"
+          class="text-white text-lg hover:bg-green-600 px-4 py-2 rounded-md transition duration-300"
+        >
+          Login
+        </a>
+        {% endif %}
+      </div>
     </nav>
-    
-    
 
     <!-- Content Area -->
     <main class="flex-grow container mx-auto p-8">
-        <h1 class="text-3xl font-bold text-center text-gray-700 mb-8">Welcome to C-STAT</h1>
-        
-        <!-- Card Tiles -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Tile 1 -->
-            <a href="{% url 'charts_generation_on_teg' %}" class="bg-blue-500 text-white rounded-lg shadow-lg p-6 flex flex-col items-center transition transform hover:scale-105 hover:bg-blue-400">
-                <i class="fas fa-chart-pie fa-3x mb-4"></i>
-                <h2 class="text-xl font-semibold text-center">Charts Generation on TEG Analysis</h2>
-            </a>
+      <h1 class="text-3xl font-bold text-center text-gray-700 mb-8">
+        Welcome to C-STAT
+      </h1>
 
-            <!-- Tile 2 -->
-            <a href="{% url 'home_page' %}" class="bg-blue-800 text-white rounded-lg shadow-lg p-6 flex flex-col items-center transition transform hover:scale-105 hover:bg-blue-700">
-                <i class="fas fa-table fa-3x mb-4"></i>
-                <h2 class="text-xl font-semibold text-center">Descriptive Statistics Tables Generation</h2>
-            </a>
+      <!-- Card Tiles -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Tile 1 -->
+        <a
+          href="{% url 'charts_generation_on_teg' %}"
+          class="bg-blue-500 text-white rounded-lg shadow-lg p-6 flex flex-col items-center transition transform hover:scale-105 hover:bg-blue-400"
+        >
+          <i class="fas fa-chart-pie fa-3x mb-4"></i>
+          <h2 class="text-xl font-semibold text-center">
+            Charts Generation on TEG Analysis
+          </h2>
+        </a>
 
-            <!-- Tile 3 -->
-            <a href="{% url 'process_folder' %}" class="bg-green-500 text-white rounded-lg shadow-lg p-6 flex flex-col items-center transition transform hover:scale-105 hover:bg-green-400">
-                <i class="fas fa-folder fa-3x mb-4"></i>
-                <h2 class="text-xl font-semibold text-center">Microfinances Trimester Sesame Statement Consolidation</h2>
-            </a>
+        <!-- Tile 2 -->
+        <a
+          href="{% url 'home_page' %}"
+          class="bg-blue-800 text-white rounded-lg shadow-lg p-6 flex flex-col items-center transition transform hover:scale-105 hover:bg-blue-700"
+        >
+          <i class="fas fa-table fa-3x mb-4"></i>
+          <h2 class="text-xl font-semibold text-center">
+            Descriptive Statistics Tables Generation
+          </h2>
+        </a>
 
-            <!-- Tile 4 -->
-            <a href="{% url 'calc_variation_rates' %}" class="bg-green-700 text-white rounded-lg shadow-lg p-6 flex flex-col items-center transition transform hover:scale-105 hover:bg-green-600">
-                <i class="fas fa-exchange-alt fa-3x mb-4"></i>
-                <h2 class="text-xl font-semibold text-center">Variation Calculations Between Two Trimesters</h2>
-            </a>
-        </div>
+        <!-- Tile 3 -->
+        <a
+          href="{% url 'process_folder' %}"
+          class="bg-green-500 text-white rounded-lg shadow-lg p-6 flex flex-col items-center transition transform hover:scale-105 hover:bg-green-400"
+        >
+          <i class="fas fa-folder fa-3x mb-4"></i>
+          <h2 class="text-xl font-semibold text-center">
+            Microfinances Trimester Sesame Statement Consolidation
+          </h2>
+        </a>
+
+        <!-- Tile 4 -->
+        <a
+          href="{% url 'calc_variation_rates' %}"
+          class="bg-green-700 text-white rounded-lg shadow-lg p-6 flex flex-col items-center transition transform hover:scale-105 hover:bg-green-600"
+        >
+          <i class="fas fa-exchange-alt fa-3x mb-4"></i>
+          <h2 class="text-xl font-semibold text-center">
+            Variation Calculations Between Two Trimesters
+          </h2>
+        </a>
+      </div>
     </main>
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white p-4 text-center">
-        <p class="text-sm">&copy; 2024 C-STAT. All rights reserved.</p>
+      <p class="text-sm">&copy; 2024 C-STAT. All rights reserved.</p>
     </footer>
 
     <!-- FontAwesome for icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-</body>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
